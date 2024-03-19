@@ -2,8 +2,10 @@ package br.com.fiap.financaspro.controller;
 
 import java.util.List;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,11 +38,10 @@ public class CategoriaController {
     }
 
     @PostMapping
-    @ResponseStatus(code = HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     public Categoria create(@RequestBody Categoria categoria){ //binding
         log.info("cadastrando categoria {} ", categoria);
-        repository.save(categoria);
-        return categoria;
+        return repository.save(categoria);
     }
     
     @GetMapping("{id}")
@@ -55,15 +56,13 @@ public class CategoriaController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Object> destroy(@PathVariable Long id){
+    @ResponseStatus(NO_CONTENT) //vai retornar um status code de no content, assim colocamos o metodo para void
+    public void destroy(@PathVariable Long id){
         log.info("apagando categoria");
 
         verificarSeExisteCategoria(id);
 
         repository.deleteById(id);
-        return ResponseEntity.noContent().build();
-
-
     }
 
     private void verificarSeExisteCategoria(Long id) {
@@ -73,14 +72,13 @@ public class CategoriaController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Categoria> update(@PathVariable Long id, @RequestBody Categoria categoria) {
+    public Categoria update(@PathVariable Long id, @RequestBody Categoria categoria) {
         log.info("atualizando categoria com id {} para {}", id, categoria);
         
         verificarSeExisteCategoria(id);
         
         categoria.setId(id);
-        repository.save(categoria); //serve como um UPDATE caso ja exista no banco de dados
-        return ResponseEntity.ok(categoria);
+        return repository.save(categoria); //serve como um UPDATE caso ja exista no banco de dados
     }
 
     // private Optional<Categoria> getCategoriaById(Long id) {
