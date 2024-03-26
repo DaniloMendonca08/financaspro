@@ -2,6 +2,7 @@ package br.com.fiap.financaspro.controller;
 
 import java.util.List;
 
+import org.springframework.ai.openai.OpenAiChatClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
@@ -31,6 +32,9 @@ public class CategoriaController {
     @Autowired
     CategoriaRepository repository;
 
+    @Autowired
+    OpenAiChatClient gpt;
+
     @GetMapping
     public List<Categoria> index() {
         return repository.findAll();
@@ -41,6 +45,8 @@ public class CategoriaController {
     @ResponseStatus(CREATED)
     public Categoria create(@RequestBody Categoria categoria){ //binding
         log.info("cadastrando categoria {} ", categoria);
+        var icone = gpt.call("Sugira um icone do Material Icons para uma categoria chamada " + categoria.getNome() + ". Retorne apenas o nome do icone");
+        categoria.setIcone(icone);
         return repository.save(categoria);
     }
     
